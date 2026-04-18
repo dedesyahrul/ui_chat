@@ -1,6 +1,7 @@
 <script>
   /**
    * MessageBubble — Renders a single chat message with markdown-like formatting
+   * User messages appear on the RIGHT, AI messages on the LEFT (like ChatGPT)
    */
   let { message } = $props();
 
@@ -30,11 +31,6 @@
     // Blockquote
     html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
 
-    // Tables
-    html = html.replace(/^\|(.+)\|$/gm, (match) => {
-      return match;
-    });
-
     // Process tables
     const lines = html.split('\n');
     let inTable = false;
@@ -50,10 +46,8 @@
         }
         const cells = line.split('|').filter(c => c.trim() !== '');
         if (cells.every(c => c.trim().match(/^[-:]+$/))) {
-          continue; // separator row
+          continue;
         }
-        const isHeader = !inTable || tableHtml === '<div class="table-wrapper"><table>';
-        const tag = processedLines.length === 0 || tableHtml === '<div class="table-wrapper"><table>' ? 'th' : 'td';
         const firstDataRow = tableHtml.indexOf('<tr>') === -1;
         tableHtml += '<tr>' + cells.map(c => `<${firstDataRow ? 'th' : 'td'}>${c.trim()}</${firstDataRow ? 'th' : 'td'}>`).join('') + '</tr>';
       } else {
@@ -86,7 +80,6 @@
     html = html.replace(/\n\n/g, '</p><p>');
     html = html.replace(/\n/g, '<br/>');
 
-    // Wrap in paragraph if not already wrapped
     if (!html.startsWith('<')) {
       html = '<p>' + html + '</p>';
     }
@@ -120,43 +113,42 @@
 </script>
 
 <div class="message-row {message.role}" id="msg-{message.id}">
-  <div class="message-container">
-    <!-- Avatar -->
-    <div class="message-avatar">
-      {#if message.role === 'assistant'}
+  {#if message.role === 'user'}
+    <!-- USER MESSAGE — RIGHT SIDE BUBBLE -->
+    <div class="message-container user-container">
+      <div class="user-bubble">
+        <p class="user-text">{message.content}</p>
+      </div>
+      <div class="message-avatar">
+        <div class="avatar-user">
+          <span>D</span>
+        </div>
+      </div>
+    </div>
+  {:else}
+    <!-- ASSISTANT MESSAGE — LEFT SIDE -->
+    <div class="message-container assistant-container">
+      <div class="message-avatar">
         <div class="avatar-ai">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-      {:else}
-        <div class="avatar-user">
-          <span>D</span>
+      </div>
+
+      <div class="message-content">
+        <div class="message-header">
+          <span class="message-author">AI Assistant</span>
+          {#if message.model}
+            <span class="message-model">{message.model}</span>
+          {/if}
         </div>
-      {/if}
-    </div>
 
-    <!-- Message content -->
-    <div class="message-content">
-      <div class="message-header">
-        <span class="message-author">
-          {message.role === 'assistant' ? 'AI Assistant' : 'You'}
-        </span>
-        {#if message.model}
-          <span class="message-model">{message.model}</span>
-        {/if}
-      </div>
-
-      <div class="message-body">
-        {#if message.role === 'assistant'}
+        <div class="message-body">
           {@html parseMarkdown(message.content)}
-        {:else}
-          <p>{message.content}</p>
-        {/if}
-      </div>
+        </div>
 
-      <!-- Message actions -->
-      {#if message.role === 'assistant'}
+        <!-- Message actions -->
         <div class="message-actions">
           <button class="msg-action-btn" onclick={copyMessage} title={copied ? 'Copied!' : 'Copy'}>
             {#if copied}
@@ -188,46 +180,93 @@
             </svg>
           </button>
         </div>
-      {/if}
+      </div>
     </div>
-  </div>
+  {/if}
 </div>
 
 <style>
   .message-row {
-    padding: var(--space-4) 0;
+    padding: var(--space-3) 0;
     animation: fadeInUp 300ms ease;
   }
 
+  /* ============================================
+     SHARED CONTAINER
+     ============================================ */
   .message-container {
-    max-width: 768px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 0 var(--space-6);
     display: flex;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
-  /* Avatars */
-  .message-avatar {
+  /* ============================================
+     USER MESSAGE — RIGHT ALIGNED BUBBLE
+     ============================================ */
+  .user-container {
+    justify-content: flex-end;
+  }
+
+  .user-bubble {
+    max-width: 70%;
+    padding: var(--space-3) var(--space-5);
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    border-radius: var(--radius-2xl) var(--radius-2xl) var(--radius-sm) var(--radius-2xl);
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.25);
+    animation: fadeInScale 250ms ease;
+  }
+
+  .user-text {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: #ffffff;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .user-container .message-avatar {
+    flex-shrink: 0;
+    align-self: flex-end;
+  }
+
+  /* ============================================
+     ASSISTANT MESSAGE — LEFT ALIGNED
+     ============================================ */
+  .assistant-container {
+    justify-content: flex-start;
+  }
+
+  .assistant-container .message-avatar {
     flex-shrink: 0;
     padding-top: 2px;
   }
 
+  .message-content {
+    flex: 1;
+    min-width: 0;
+    max-width: 75%;
+  }
+
+  /* ============================================
+     AVATARS
+     ============================================ */
   .avatar-ai {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius-full);
     background: var(--brand-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    box-shadow: 0 0 12px rgba(16, 163, 127, 0.3);
+    box-shadow: 0 0 14px rgba(16, 163, 127, 0.3);
   }
 
   .avatar-user {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius-full);
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
     display: flex;
@@ -238,12 +277,9 @@
     font-size: var(--text-sm);
   }
 
-  /* Message content */
-  .message-content {
-    flex: 1;
-    min-width: 0;
-  }
-
+  /* ============================================
+     MESSAGE HEADER & BODY (ASSISTANT)
+     ============================================ */
   .message-header {
     display: flex;
     align-items: center;
@@ -265,35 +301,42 @@
     border-radius: var(--radius-full);
   }
 
-  /* Message body typography */
   .message-body {
     font-size: var(--text-base);
     line-height: 1.7;
     color: var(--text-primary);
+    background: var(--bg-surface);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-sm) var(--radius-2xl) var(--radius-2xl) var(--radius-2xl);
+    border: 1px solid var(--border-default);
   }
 
   .message-body :global(p) {
     margin-bottom: var(--space-3);
   }
 
+  .message-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
   .message-body :global(h2) {
     font-size: var(--text-xl);
     font-weight: 700;
-    margin: var(--space-6) 0 var(--space-3);
+    margin: var(--space-5) 0 var(--space-3);
     color: var(--text-primary);
   }
 
   .message-body :global(h3) {
     font-size: var(--text-lg);
     font-weight: 600;
-    margin: var(--space-5) 0 var(--space-2);
+    margin: var(--space-4) 0 var(--space-2);
     color: var(--text-primary);
   }
 
   .message-body :global(h4) {
     font-size: var(--text-md);
     font-weight: 600;
-    margin: var(--space-4) 0 var(--space-2);
+    margin: var(--space-3) 0 var(--space-2);
     color: var(--text-primary);
   }
 
@@ -393,12 +436,12 @@
   }
 
   .message-body :global(.inline-code) {
-    background: var(--bg-tertiary);
+    background: rgba(255,255,255,0.08);
     padding: 1px 5px;
     border-radius: var(--radius-sm);
     font-size: 0.875em;
     color: #f0abfc;
-    border: 1px solid var(--border-default);
+    border: 1px solid rgba(255,255,255,0.1);
   }
 
   /* Tables */
@@ -434,12 +477,15 @@
     border-bottom: none;
   }
 
-  /* Message actions */
+  /* ============================================
+     MESSAGE ACTIONS (ASSISTANT ONLY)
+     ============================================ */
   .message-actions {
     display: flex;
     align-items: center;
     gap: var(--space-1);
     margin-top: var(--space-2);
+    padding-left: var(--space-1);
     opacity: 0;
     transition: opacity var(--transition-fast);
   }
@@ -464,18 +510,20 @@
     color: var(--text-primary);
   }
 
-  /* User message special styling */
-  .message-row.user .message-body {
-    color: var(--text-primary);
-  }
-
-  .message-row.user .message-body p {
-    margin-bottom: 0;
-  }
-
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .message-container {
-      padding: 0 var(--space-4);
+      padding: 0 var(--space-3);
+    }
+
+    .user-bubble {
+      max-width: 85%;
+    }
+
+    .message-content {
+      max-width: 85%;
     }
   }
 </style>

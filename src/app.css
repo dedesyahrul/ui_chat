@@ -23,8 +23,8 @@
   --brand-primary: #10a37f;
   --brand-primary-hover: #1a7f64;
   --brand-secondary: #6366f1;
-  --brand-gradient: linear-gradient(135deg, #10a37f, #6366f1);
-  --brand-gradient-vivid: linear-gradient(135deg, #10a37f 0%, #0ea5e9 50%, #8b5cf6 100%);
+  --brand-gradient: #10a37f;
+  --brand-gradient-vivid: #10a37f;
 
   /* Text */
   --text-primary: #ececec;
@@ -44,11 +44,11 @@
   --border-input: #424242;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
-  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.6);
-  --shadow-glow: 0 0 20px rgba(16, 163, 127, 0.15);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.4);
+  --shadow-glow: none;
 
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

@@ -303,8 +303,8 @@
   .user-avatar {
     width: 32px;
     height: 32px;
-    border-radius: var(--radius-full);
-    background: var(--brand-gradient);
+    border-radius: var(--radius-sm);
+    background: #424242;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -211,17 +211,16 @@
 
   .user-bubble {
     max-width: 70%;
-    padding: var(--space-3) var(--space-5);
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    border-radius: var(--radius-2xl) var(--radius-2xl) var(--radius-sm) var(--radius-2xl);
-    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.25);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-surface-elevated);
+    border-radius: var(--radius-xl);
     animation: fadeInScale 250ms ease;
   }
 
   .user-text {
     font-size: var(--text-base);
     line-height: 1.6;
-    color: #ffffff;
+    color: var(--text-primary);
     white-space: pre-wrap;
     word-wrap: break-word;
   }
@@ -253,22 +252,21 @@
      AVATARS
      ============================================ */
   .avatar-ai {
-    width: 34px;
-    height: 34px;
-    border-radius: var(--radius-full);
-    background: var(--brand-gradient);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: #10a37f;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    box-shadow: 0 0 14px rgba(16, 163, 127, 0.3);
   }
 
   .avatar-user {
-    width: 34px;
-    height: 34px;
-    border-radius: var(--radius-full);
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: #424242;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -305,10 +303,8 @@
     font-size: var(--text-base);
     line-height: 1.7;
     color: var(--text-primary);
-    background: var(--bg-surface);
-    padding: var(--space-4) var(--space-5);
-    border-radius: var(--radius-sm) var(--radius-2xl) var(--radius-2xl) var(--radius-2xl);
-    border: 1px solid var(--border-default);
+    background: transparent;
+    padding: var(--space-1) 0;
   }
 
   .message-body :global(p) {

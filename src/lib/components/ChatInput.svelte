@@ -196,7 +196,6 @@
   .input-container.focused {
     border-color: var(--border-hover);
     background: var(--bg-input-focus);
-    box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.08);
   }
 
   .input-wrapper {
@@ -263,7 +262,6 @@
 
   .send-btn.active:hover {
     background: white;
-    transform: scale(1.05);
   }
 
   .send-btn svg:first-child {
